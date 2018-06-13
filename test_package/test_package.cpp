@@ -3,7 +3,9 @@ extern "C"
 #include <libavcodec/avcodec.h>
 #include <libavformat/avformat.h>
 #include <libavfilter/avfilter.h>
+#ifdef WITH_AVDEVICE
 #include <libavdevice/avdevice.h>
+#endif
 #include <libswresample/swresample.h>
 #include <libswscale/swscale.h>
 #include <libavutil/hwcontext.h>
@@ -49,6 +51,7 @@ static void check_filter(const char * name)
     std::cout << "OK!" << std::endl;
 }
 
+#ifdef WITH_AVDEVICE
 static void check_hwaccel(const char * name)
 {
     std::cout << "checking for hwaccel " << name << " ... ";
@@ -59,6 +62,7 @@ static void check_hwaccel(const char * name)
         throw_exception("hwaccel wasn't found", name);
     std::cout << "OK!" << std::endl;
 }
+#endif
 
 static void check_input_device(const char * name)
 {
@@ -136,7 +140,9 @@ int main() try
     avcodec_register_all();
     av_register_all();
     avfilter_register_all();
+#ifdef WITH_AVDEVICE
     avdevice_register_all();
+#endif
     swresample_version();
     swscale_version();
 #ifdef WITH_POSTPROC

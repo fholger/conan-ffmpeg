@@ -9,7 +9,7 @@ import shutil
 
 class FFMpegConan(ConanFile):
     name = "ffmpeg"
-    version = "3.4"
+    version = "3.3.7"
     url = "https://github.com/bincrafters/conan-ffmpeg"
     description = "A complete, cross-platform solution to record, convert and stream audio and video"
     license = "https://github.com/FFmpeg/FFmpeg/blob/master/LICENSE.md"
@@ -47,6 +47,8 @@ class FFMpegConan(ConanFile):
                "videotoolbox": [True, False],
                "vda": [True, False],
                "securetransport": [True, False],
+               "network": [True, False],
+               "avdevice": [True, False],
                "qsv": [True, False]}
     default_options = ("shared=False",
                        "fPIC=True",
@@ -80,6 +82,8 @@ class FFMpegConan(ConanFile):
                        "videotoolbox=True",
                        "vda=False",
                        "securetransport=True",
+                       "network=True",
+                       "avdevice=True",
                        "qsv=True")
 
     @property
@@ -247,6 +251,8 @@ class FFMpegConan(ConanFile):
             args.append('--enable-libvpx' if self.options.vpx else '--disable-libvpx')
             args.append('--enable-libmp3lame' if self.options.mp3lame else '--disable-libmp3lame')
             args.append('--enable-libfdk-aac' if self.options.fdk_aac else '--disable-libfdk-aac')
+            args.append('--enable-avdevice' if self.options.avdevice else '--disable-avdevice')
+            args.append('--enable-network' if self.options.network else '--disable-network')
 
             if self.options.x264 or self.options.x265 or self.options.postproc:
                 args.append('--enable-gpl')
@@ -332,7 +338,9 @@ class FFMpegConan(ConanFile):
                     shutil.move(lib, lib[:-2] + '.lib')
 
     def package_info(self):
-        libs = ['avdevice', 'avfilter', 'avformat', 'avcodec', 'swresample', 'swscale', 'avutil']
+        libs = ['avfilter', 'avformat', 'avcodec', 'swresample', 'swscale', 'avutil']
+        if self.options.avdevice:
+            libs.append('avdevice')
         if self.options.postproc:
             libs.append('postproc')
         if self.settings.compiler == 'Visual Studio':
